@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Professional {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  rol       String   // e.g. "Fonoaudióloga"
+  correo    String   @unique
+  password  String
+  materials Material[]
+}
+
+model Student {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  rut         String   @unique
+  curso       String
+  diagnostico String
+  apoderado   String
+  telefono    String
+  correo      String
+  materials   Material[]
+}
+
+model Material {
+  id              Int      @id @default(autoincrement())
+  actividad       String
+  asignatura      String
+  objetivos       String
+  recomendaciones String?
+  fecha_carga     String
+  fecha_inicio    String
+  fecha_termino   String
+  estado          String   @default("Pendiente")
+  acceso          String   @default("Sin acceso")
+  link            String?
+  archivo_url     String?
+  archivoUrl      String?
+
+  professionalId  Int
+  professional    Professional @relation(fields: [professionalId], references: [id])
+  
+  studentId       Int
+  student         Student      @relation(fields: [studentId], references: [id])
+}
