@@ -6,16 +6,20 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Professional {
   id        Int      @id @default(autoincrement())
   nombre    String
+  run       String?
   rol       String   // e.g. "Fonoaudióloga"
   correo    String   @unique
   password  String
+  isAdmin   Boolean  @default(false)
+  activo    Boolean  @default(true)
   materials Material[]
 }
 
@@ -24,10 +28,14 @@ model Student {
   nombre      String
   rut         String   @unique
   curso       String
+  sexo        String   @default("No especificado")
+  fechaNacimiento String?
+  fotoUrl     String?
   diagnostico String
   apoderado   String
   telefono    String
   correo      String
+  token       String?  @unique
   materials   Material[]
 }
 
@@ -45,6 +53,7 @@ model Material {
   link            String?
   archivo_url     String?
   archivoUrl      String?
+  fecha_apertura  DateTime?
 
   professionalId  Int
   professional    Professional @relation(fields: [professionalId], references: [id])

@@ -59,6 +59,23 @@ export default function NuevoAlumnoPage() {
                 <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Diagnóstico PIE</label>
                 <input type="text" name="diagnostico" className="glass-input" placeholder="Ej. TEL / TEA" required />
               </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Sexo</label>
+                <select name="sexo" className="glass-input" required style={{ width: '100%', appearance: 'none', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                  <option value="" style={{ color: '#000' }}>Seleccione...</option>
+                  <option value="Niño" style={{ color: '#000' }}>Niño</option>
+                  <option value="Niña" style={{ color: '#000' }}>Niña</option>
+                  <option value="Otro" style={{ color: '#000' }}>Otro</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Fecha de Nacimiento</label>
+                <input type="date" name="fechaNacimiento" className="glass-input" required />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Fotografía del Alumno (Opcional)</label>
+                <input type="file" name="foto" accept="image/*" className="glass-input" style={{ padding: '8px' }} />
+              </div>
             </div>
           </div>
 

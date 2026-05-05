@@ -27,6 +27,17 @@ export async function getAlumnoById(id: number) {
   }
 }
 
+export async function getAlumnoByToken(token: string) {
+  try {
+    return await prisma.student.findUnique({
+      where: { token }
+    });
+  } catch (error) {
+    console.error("Error fetching alumno by token:", error);
+    return null;
+  }
+}
+
 export async function getMaterialesPorAlumno(studentId: number) {
   try {
     const materials = await prisma.material.findMany({
@@ -46,7 +57,9 @@ export async function getMaterialesPorAlumno(studentId: number) {
       acceso: m.acceso,
       estado: m.estado,
       link: m.link || '#',
-      archivoUrl: m.archivoUrl
+      archivoUrl: m.archivoUrl,
+      professionalId: m.professionalId,
+      fecha_apertura: m.fecha_apertura
     }));
   } catch (error) {
     console.error("Error fetching materials:", error);

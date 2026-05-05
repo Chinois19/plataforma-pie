@@ -2,6 +2,8 @@
 
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { getCurrentUser } from './auth';
+import { put } from '@vercel/blob';
 
 export async function createMaterialAction(formData: FormData) {
   try {
@@ -14,42 +16,25 @@ export async function createMaterialAction(formData: FormData) {
     const fecha_termino = formData.get('fecha_termino') as string;
     const studentParamId = formData.get('studentId') as string;
     const archivo = formData.get('archivo') as File;
+    const link_drive = formData.get('link_drive') as string;
 
     const studentIdInt = parseInt(studentParamId);
     let archivoUrl = '';
 
-    // Lógica para guardar el archivo físicamente
+    // Lógica para guardar el archivo físicamente en Vercel Blob
     if (archivo && archivo.size > 0) {
-      const fs = require('fs');
-      const path = require('path');
-      
-      const bytes = await archivo.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      // Nombre de archivo seguro (evitar caracteres extraños y colisiones)
       const fileName = `${Date.now()}-${archivo.name.replace(/\s+/g, '_')}`;
-      const filePath = path.join(uploadDir, fileName);
-      
-      fs.writeFileSync(filePath, buffer);
-      archivoUrl = `/uploads/${fileName}`;
+      const blob = await put(fileName, archivo, {
+        access: 'public',
+      });
+      archivoUrl = blob.url;
     }
 
-    // Garantizamos que exista un profesional genérico para esta demo
-    const professional = await prisma.professional.upsert({
-      where: { correo: 'equipo@pie.cl' },
-      update: { nombre: profesor },
-      create: { 
-        nombre: profesor, 
-        rol: 'Docente PIE', 
-        correo: 'equipo@pie.cl', 
-        password: 'password123' 
-      }
-    });
+    const user = await getCurrentUser();
+    
+    if (!user) {
+      return { success: false, error: 'No autorizado' };
+    }
 
     const formatDate = (dateStr: string) => {
       if (!dateStr) return '';
@@ -70,8 +55,9 @@ export async function createMaterialAction(formData: FormData) {
         fecha_termino: formatDate(fecha_termino),
         estado: 'Pendiente',
         acceso: 'Sin acceso',
+        link: link_drive || null,
         archivoUrl: archivoUrl,
-        professionalId: professional.id,
+        professionalId: user.id,
         studentId: studentIdInt
       }
     });
@@ -91,16 +77,45 @@ export async function createMaterialAction(formData: FormData) {
 
 export async function markMaterialAsAccessedAction(materialId: number) {
   try {
+    const material = await prisma.material.findUnique({ where: { id: materialId } });
+    if (!material) return { success: false };
+
+    // Solo actualizamos la fecha de apertura si no se ha abierto antes
+    const dataToUpdate: any = {
+      acceso: 'Accedido',
+      estado: 'En Curso'
+    };
+
+    if (!material.fecha_apertura) {
+      dataToUpdate.fecha_apertura = new Date();
+    }
+
     await prisma.material.update({
       where: { id: materialId },
-      data: {
-        acceso: 'Accedido',
-        estado: 'Visto por Familia'
-      }
+      data: dataToUpdate
     });
     return { success: true };
   } catch (error) {
     console.error('Error al marcar acceso:', error);
     return { success: false };
+  }
+}
+
+export async function deleteMaterialAction(materialId: number) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return { success: false, error: 'No autorizado' };
+
+    const material = await prisma.material.findUnique({ where: { id: materialId } });
+    if (!material) return { success: false, error: 'Material no encontrado' };
+
+    if (!user.isAdmin && material.professionalId !== user.id) {
+      return { success: false, error: 'No autorizado para eliminar este material' };
+    }
+
+    await prisma.material.delete({ where: { id: materialId } });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: 'Error al eliminar material' };
   }
 }

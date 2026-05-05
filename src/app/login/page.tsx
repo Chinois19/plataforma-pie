@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LoginPageClient from './LoginPageClient';
 
 export default function LoginPage() {
   return (
@@ -24,38 +25,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', textAlign: 'left' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>
-              Correo Electrónico
-            </label>
-            <input 
-              type="email" 
-              className="glass-input" 
-              placeholder="profesional@pucaraalto.cl"
-              required 
-            />
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>
-              Contraseña
-            </label>
-            <input 
-              type="password" 
-              className="glass-input" 
-              placeholder="••••••••"
-              required 
-            />
-          </div>
-
-          <div style={{ marginTop: '1rem' }}>
-            {/* For now this will link to dashboard as a mock login */}
-            <Link href="/dashboard" className="glass-button primary" style={{ width: '100%', display: 'block', textAlign: 'center', boxSizing: 'border-box' }}>
-              Ingresar a la Plataforma
-            </Link>
-          </div>
-        </form>
+        <LoginPageClient />
 
         <div style={{ marginTop: '2rem', fontSize: '0.875rem' }}>
           <Link href="/" style={{ color: '#60a5fa', textDecoration: 'none' }}>
