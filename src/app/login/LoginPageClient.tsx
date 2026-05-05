@@ -31,7 +31,7 @@ export default function LoginPageClient() {
         </label>
         <input 
           name="correo"
-          type="email" 
+          type="text" 
           className="glass-input" 
           placeholder="admin@pucaraalto.cl"
           required 
