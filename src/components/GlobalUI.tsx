@@ -38,9 +38,14 @@ export default function GlobalUI() {
         }
       }}/>
       
+      {/* Marca de agua de fondo */}
+      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: -1, pointerEvents: 'none', opacity: 0.05, width: '60vw', height: '60vw', maxWidth: '800px', maxHeight: '800px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <img src="/logo.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'grayscale(100%)' }} />
+      </div>
+
       {/* Elementos globales fijos */}
-      <div style={{ position: 'fixed', top: '1rem', left: '2rem', zIndex: 50, display: 'flex', alignItems: 'center', gap: '1rem', pointerEvents: 'none' }}>
-        <img src="/logo.jpg" alt="Logo Escuela Pucara Alto" style={{ width: '45px', height: '45px', borderRadius: '8px', objectFit: 'contain', background: 'white', padding: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)', pointerEvents: 'auto' }} />
+      <div style={{ position: 'fixed', top: '1.5rem', left: '2rem', zIndex: 50, display: 'flex', alignItems: 'center', gap: '1rem', pointerEvents: 'none' }}>
+        <img src="/logo.jpg" alt="Logo Escuela Pucara Alto" style={{ width: '60px', height: '60px', borderRadius: '12px', objectFit: 'contain', pointerEvents: 'auto', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }} />
       </div>
 
       <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 50 }}>
