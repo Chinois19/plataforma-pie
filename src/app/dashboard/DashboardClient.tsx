@@ -30,7 +30,7 @@ export default function DashboardClient({ initialAlumnos, initialAuditoria, user
 
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column' }}>
           <h2 style={{ fontSize: '1.5rem', margin: 0 }}>Panel PIE</h2>
-          <span style={{ fontSize: '0.875rem', color: '#94a3b8', marginTop: '4px' }}>Escuela Pucara Alto - {user.nombre} ({user.rol})</span>
+          <span style={{ fontSize: '0.875rem', color: 'var(--foreground-muted)', marginTop: '4px' }}>Escuela Pucara Alto - {user.nombre} ({user.rol})</span>
         </div>
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: '1rem' }}>
           {user.isAdmin && (
@@ -48,21 +48,21 @@ export default function DashboardClient({ initialAlumnos, initialAuditoria, user
         
         {/* Listado de Alumnos */}
         <section className="glass-panel" style={{ padding: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border-subtle)', paddingBottom: '0.5rem' }}>
             <h3 style={{ fontSize: '1.5rem', margin: 0 }}>Mis Alumnos</h3>
             <Link href="/dashboard/nuevo-alumno" className="glass-button primary" style={{ padding: '6px 12px', fontSize: '0.875rem' }}>
               + Ingresar Alumno
             </Link>
           </div>
           {alumnos.length === 0 ? (
-            <p style={{ color: '#94a3b8', textAlign: 'center', margin: '2rem 0' }}>No hay alumnos en la modalidad a distancia.</p>
+            <p style={{ color: 'var(--foreground-muted)', textAlign: 'center', margin: '2rem 0' }}>No hay alumnos en la modalidad a distancia.</p>
           ) : (
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {alumnos.map(alumno => (
-                <li key={alumno.id} style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <li key={alumno.id} style={{ background: 'var(--glass-bg-subtle)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--glass-border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <h4 style={{ margin: 0, fontSize: '1.1rem' }}>{alumno.nombre}</h4>
-                    <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>{alumno.curso}</span>
+                    <span style={{ fontSize: '0.875rem', color: 'var(--foreground-muted)' }}>{alumno.curso}</span>
                   </div>
                   <Link href={`/dashboard/alumno/${alumno.id}`} className="glass-button primary" style={{ padding: '6px 12px', fontSize: '0.875rem' }}>
                     Ver Ficha
@@ -75,7 +75,7 @@ export default function DashboardClient({ initialAlumnos, initialAuditoria, user
 
         {/* Auditoría de Docentes */}
         <section className="glass-panel" style={{ padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border-subtle)', paddingBottom: '0.5rem' }}>
             Auditoría de Material
           </h3>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -84,7 +84,7 @@ export default function DashboardClient({ initialAlumnos, initialAuditoria, user
                 <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>
                   <strong>{item.profesional}</strong> {item.accion} <span style={{ color: '#60a5fa' }}>{item.archivo}</span> para {item.alumno}
                 </p>
-                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{item.tiempo}</span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--foreground-muted)' }}>{item.tiempo}</span>
               </li>
             ))}
           </ul>

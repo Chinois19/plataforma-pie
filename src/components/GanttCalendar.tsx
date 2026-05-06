@@ -76,7 +76,7 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
           Calendario de Actividades
         </h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--glass-bg-subtle)', padding: '0.5rem', borderRadius: '12px' }}>
           <button onClick={handlePrevMonth} className="glass-button" style={{ padding: '4px 12px' }}>&larr; Ant</button>
           <span style={{ minWidth: '150px', textAlign: 'center', fontWeight: 'bold', textTransform: 'capitalize' }}>{currentMonthName}</span>
           <button onClick={handleNextMonth} className="glass-button" style={{ padding: '4px 12px' }}>Sig &rarr;</button>
@@ -87,10 +87,10 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
       <div style={{ overflowX: 'auto', paddingBottom: '1rem' }}>
         <div style={{ minWidth: '800px' }}>
           {/* Encabezado de días */}
-          <div style={{ display: 'grid', gridTemplateColumns: `180px repeat(${daysInMonth}, 1fr)`, gap: '2px', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
-            <div style={{ fontSize: '0.875rem', color: '#94a3b8', fontWeight: 'bold' }}>Actividad</div>
+          <div style={{ display: 'grid', gridTemplateColumns: `180px repeat(${daysInMonth}, 1fr)`, gap: '2px', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border-subtle)', paddingBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.875rem', color: 'var(--foreground-muted)', fontWeight: 'bold' }}>Actividad</div>
             {calendarDays.map(day => (
-              <div key={day} style={{ textAlign: 'center', fontSize: '0.65rem', color: '#94a3b8' }}>
+              <div key={day} style={{ textAlign: 'center', fontSize: '0.65rem', color: 'var(--foreground-muted)' }}>
                 {day}
               </div>
             ))}
@@ -99,7 +99,7 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
           {/* Tareas en Gantt */}
           {monthMaterials.map((item: any) => (
             <div key={item.id} style={{ display: 'grid', gridTemplateColumns: `180px repeat(${daysInMonth}, 1fr)`, gap: '2px', marginBottom: '0.5rem', alignItems: 'center' }}>
-              <div style={{ fontSize: '0.75rem', color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '0.5rem' }} title={item.actividad}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--foreground-subtle)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '0.5rem' }} title={item.actividad}>
                 {item.actividad}
               </div>
               <div style={{ 

@@ -60,7 +60,7 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
             Escuela Pucara Alto - Equipo PIE
           </span>
           <h1 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0' }}>Portal Familiar</h1>
-          <p style={{ color: '#cbd5e1', fontSize: '1.1rem', margin: 0 }}>
+          <p style={{ color: 'var(--foreground-subtle)', fontSize: '1.1rem', margin: 0 }}>
             Material Educativo de <strong>{alumno.nombre}</strong> ({alumno.curso})
           </p>
         </div>
@@ -96,7 +96,7 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
                   position: 'relative',
                   backgroundColor: isOverdue ? 'rgba(248, 113, 113, 0.05)' : 'rgba(255,255,255,0.02)'
                 }}>
-                  <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(255,255,255,0.1)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', color: '#94a3b8' }}>
+                  <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'var(--glass-bg-subtle)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--foreground-muted)' }}>
                      Subido: {item.carga}
                      {item.fecha_apertura && (
                        <span style={{ display: 'block', marginTop: '4px', color: '#60a5fa', fontWeight: 'bold' }}>
@@ -107,8 +107,8 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginTop: '1rem' }}>
                     <div>
-                      <h3 style={{ fontSize: '1.25rem', margin: '0 0 0.5rem 0', color: '#f8fafc' }}>{item.actividad}</h3>
-                      <p style={{ fontSize: '0.875rem', color: '#94a3b8', margin: 0 }}>Asignado por: {item.profesor}</p>
+                      <h3 style={{ fontSize: '1.25rem', margin: '0 0 0.5rem 0', color: 'var(--foreground)' }}>{item.actividad}</h3>
+                      <p style={{ fontSize: '0.875rem', color: 'var(--foreground-muted)', margin: 0 }}>Asignado por: {item.profesor}</p>
                     </div>
                     <div style={{ 
                       textAlign: 'right', 
@@ -120,10 +120,10 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
                       <span style={{ display: 'block', fontSize: '0.75rem', color: isOverdue ? '#f87171' : '#facc15', textTransform: 'uppercase', fontWeight: 'bold' }}>
                         {isOverdue ? '¡ACTIVIDAD ATRASADA!' : 'Plazo de ejecución'}
                       </span>
-                      <span style={{ display: 'block', fontSize: '1rem', fontWeight: 'bold', color: '#fff' }}>
+                      <span style={{ display: 'block', fontSize: '1rem', fontWeight: 'bold', color: 'var(--foreground)' }}>
                         {item.inicio} al {item.termino}
                       </span>
-                      <span style={{ display: 'block', fontSize: '0.75rem', color: isOverdue ? '#fca5a5' : '#cbd5e1', marginTop: '4px' }}>
+                      <span style={{ display: 'block', fontSize: '0.75rem', color: isOverdue ? '#fca5a5' : 'var(--foreground-muted)', marginTop: '4px' }}>
                         {isOverdue 
                           ? `Han pasado ${Math.abs(diffDays)} días del límite` 
                           : diffDays === 0 ? '¡Vence hoy!' : `Faltan ${diffDays} días para el cierre`
@@ -132,12 +132,12 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
                     </div>
                   </div>
 
-                  <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                  <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--glass-bg-subtle)', borderRadius: '8px' }}>
                     <h4 style={{ fontSize: '0.875rem', color: '#60a5fa', margin: '0 0 0.25rem 0' }}>Objetivos a trabajar:</h4>
-                    <p style={{ fontSize: '0.875rem', color: '#e2e8f0', margin: '0 0 1rem 0' }}>{item.objetivos || 'No especificados'}</p>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--foreground)', margin: '0 0 1rem 0' }}>{item.objetivos || 'No especificados'}</p>
                     
                     <h4 style={{ fontSize: '0.875rem', color: '#c084fc', margin: '0 0 0.25rem 0' }}>Recomendaciones para el hogar:</h4>
-                    <p style={{ fontSize: '0.875rem', color: '#e2e8f0', margin: 0 }}>{item.recomendaciones || 'No hay recomendaciones adicionales.'}</p>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--foreground)', margin: 0 }}>{item.recomendaciones || 'No hay recomendaciones adicionales.'}</p>
                   </div>
 
                   <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
