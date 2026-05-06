@@ -59,7 +59,8 @@ export async function getMaterialesPorAlumno(studentId: number) {
       link: m.link || '#',
       archivoUrl: m.archivoUrl,
       professionalId: m.professionalId,
-      fecha_apertura: m.fecha_apertura
+      fecha_apertura: m.fecha_apertura,
+      tiempo_total_segundos: m.tiempo_total_segundos
     }));
   } catch (error) {
     console.error("Error fetching materials:", error);
