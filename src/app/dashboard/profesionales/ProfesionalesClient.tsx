@@ -3,28 +3,39 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { toggleProfessionalStatus, createProfessional } from '@/app/actions/admin';
+import toast from 'react-hot-toast';
 
 export default function ProfesionalesClient({ user, initialProfesionales }: { user: any, initialProfesionales: any[] }) {
   const [profesionales, setProfesionales] = useState(initialProfesionales);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedRol, setSelectedRol] = useState('');
 
   const handleToggle = async (id: number, currentStatus: boolean) => {
     const res = await toggleProfessionalStatus(id, currentStatus);
     if (res.success) {
       setProfesionales(prev => prev.map(p => p.id === id ? { ...p, activo: !currentStatus } : p));
+      toast.success(currentStatus ? 'Profesional bloqueado' : 'Profesional desbloqueado');
     } else {
-      alert(res.error);
+      toast.error(res.error || 'Error al actualizar estado');
     }
   };
 
   const handleCreate = async (formData: FormData) => {
     setLoading(true);
     setError(null);
+    
+    // Si es "Otro", reemplazar el rol con el valor del input "otroRol"
+    if (formData.get('rol') === 'Otro' && formData.get('otroRol')) {
+      formData.set('rol', formData.get('otroRol') as string);
+    }
+    
     const res = await createProfessional(formData);
     if (res.success) {
-      window.location.reload(); // Simple reload to get updated list from server
+      toast.success('Profesional creado exitosamente');
+      setTimeout(() => window.location.reload(), 1000);
     } else {
+      toast.error(res.error || 'Error desconocido');
       setError(res.error || 'Error desconocido');
       setLoading(false);
     }
@@ -61,8 +72,9 @@ export default function ProfesionalesClient({ user, initialProfesionales }: { us
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem', color: '#cbd5e1' }}>Rol / Cargo</label>
-              <select name="rol" className="glass-input" required style={{ width: '100%', appearance: 'none', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              <select name="rol" className="glass-input" required value={selectedRol} onChange={(e) => setSelectedRol(e.target.value)} style={{ width: '100%', appearance: 'none', backgroundColor: 'rgba(255,255,255,0.05)' }}>
                 <option value="" style={{ color: '#000' }}>Seleccione un rol...</option>
+                <option value="Profesor" style={{ color: '#000' }}>Profesor</option>
                 <option value="Fonoaudiólogo/a" style={{ color: '#000' }}>Fonoaudiólogo/a</option>
                 <option value="Psicólogo/a" style={{ color: '#000' }}>Psicólogo/a</option>
                 <option value="Educador/a Diferencial" style={{ color: '#000' }}>Educador/a Diferencial</option>
@@ -73,6 +85,12 @@ export default function ProfesionalesClient({ user, initialProfesionales }: { us
                 <option value="Otro" style={{ color: '#000' }}>Otro</option>
               </select>
             </div>
+            {selectedRol === 'Otro' && (
+              <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem', color: '#cbd5e1' }}>Especifique el rol</label>
+                <input name="otroRol" type="text" className="glass-input" required />
+              </div>
+            )}
             <div>
               <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem', color: '#cbd5e1' }}>Correo</label>
               <input name="correo" type="email" className="glass-input" required />
@@ -144,10 +162,10 @@ export default function ProfesionalesClient({ user, initialProfesionales }: { us
                             if (nuevaPass && nuevaPass.length >= 6) {
                               const { changePasswordAction } = await import('@/app/actions/admin');
                               const res = await changePasswordAction(p.id, nuevaPass);
-                              if (res.success) alert('Contraseña actualizada correctamente.');
-                              else alert(res.error);
+                              if (res.success) toast.success('Contraseña actualizada correctamente.');
+                              else toast.error(res.error || 'Error al actualizar');
                             } else if (nuevaPass) {
-                              alert('La contraseña debe tener al menos 6 caracteres.');
+                              toast.error('La contraseña debe tener al menos 6 caracteres.');
                             }
                           }}
                           className="glass-button" 

@@ -17,6 +17,33 @@ html {
   color-scheme: dark;
 }
 
+html.light-theme {
+  color-scheme: light;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.5);
+}
+
+html.light-theme .glass-button {
+  color: #0f172a;
+  background: linear-gradient(135deg, rgba(0,0,0,0.05), rgba(0,0,0,0));
+}
+
+html.light-theme .glass-button:hover {
+  background: linear-gradient(135deg, rgba(0,0,0,0.1), rgba(0,0,0,0.02));
+}
+
+html.light-theme .glass-button.primary {
+  color: #ffffff;
+}
+
+html.light-theme .glass-input {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.8);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

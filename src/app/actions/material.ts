@@ -3,7 +3,6 @@
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { getCurrentUser } from './auth';
-import { put } from '@vercel/blob';
 
 export async function createMaterialAction(formData: FormData) {
   try {
@@ -15,20 +14,9 @@ export async function createMaterialAction(formData: FormData) {
     const fecha_inicio = formData.get('fecha_inicio') as string;
     const fecha_termino = formData.get('fecha_termino') as string;
     const studentParamId = formData.get('studentId') as string;
-    const archivo = formData.get('archivo') as File;
     const link_drive = formData.get('link_drive') as string;
 
     const studentIdInt = parseInt(studentParamId);
-    let archivoUrl = '';
-
-    // Lógica para guardar el archivo físicamente en Vercel Blob
-    if (archivo && archivo.size > 0) {
-      const fileName = `${Date.now()}-${archivo.name.replace(/\s+/g, '_')}`;
-      const blob = await put(fileName, archivo, {
-        access: 'public',
-      });
-      archivoUrl = blob.url;
-    }
 
     const user = await getCurrentUser();
     
@@ -56,7 +44,6 @@ export async function createMaterialAction(formData: FormData) {
         estado: 'Pendiente',
         acceso: 'Sin acceso',
         link: link_drive || null,
-        archivoUrl: archivoUrl,
         professionalId: user.id,
         studentId: studentIdInt
       }

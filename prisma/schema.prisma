@@ -32,6 +32,8 @@ model Student {
   fotoUrl     String?
   diagnostico String
   apoderado   String
+  direccion   String?
+  parentesco  String?
   telefono    String
   correo      String
   token       String?  @unique

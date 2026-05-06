@@ -3,9 +3,12 @@
 import Link from 'next/link';
 import { createStudentAction } from '@/app/actions/student';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function NuevoAlumnoPage() {
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   return (
     <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -33,9 +36,12 @@ export default function NuevoAlumnoPage() {
 
         <form action={async (formData) => {
           const res = await createStudentAction(formData);
-          // if createStudentAction redirects on success, we won't hit this unless there's an error
           if (res?.error) {
             setError(res.error);
+            toast.error(res.error);
+          } else if (res?.success) {
+            toast.success('Alumno registrado correctamente');
+            router.push('/dashboard');
           }
         }} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
@@ -53,7 +59,15 @@ export default function NuevoAlumnoPage() {
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Curso</label>
-                <input type="text" name="curso" className="glass-input" placeholder="Ej. 3° Básico A" required />
+                <select name="curso" className="glass-input" required style={{ width: '100%', appearance: 'none', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                  <option value="" style={{ color: '#000' }}>Seleccione un curso...</option>
+                  <option value="1°" style={{ color: '#000' }}>1°</option>
+                  <option value="2°" style={{ color: '#000' }}>2°</option>
+                  <option value="3°" style={{ color: '#000' }}>3°</option>
+                  <option value="4°" style={{ color: '#000' }}>4°</option>
+                  <option value="5°" style={{ color: '#000' }}>5°</option>
+                  <option value="6°" style={{ color: '#000' }}>6°</option>
+                </select>
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Diagnóstico PIE</label>
@@ -73,8 +87,6 @@ export default function NuevoAlumnoPage() {
                 <input type="date" name="fechaNacimiento" className="glass-input" required />
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Fotografía del Alumno (Opcional)</label>
-                <input type="file" name="foto" accept="image/*" className="glass-input" style={{ padding: '8px' }} />
               </div>
             </div>
           </div>
@@ -89,8 +101,25 @@ export default function NuevoAlumnoPage() {
                 <input type="text" name="apoderado" className="glass-input" placeholder="Nombre completo" required />
               </div>
               <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Parentesco con el alumno</label>
+                <select name="parentesco" className="glass-input" required style={{ width: '100%', appearance: 'none', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                  <option value="" style={{ color: '#000' }}>Seleccione parentesco...</option>
+                  <option value="Madre" style={{ color: '#000' }}>Madre</option>
+                  <option value="Padre" style={{ color: '#000' }}>Padre</option>
+                  <option value="Abuelo/a" style={{ color: '#000' }}>Abuelo/a</option>
+                  <option value="Tío/a" style={{ color: '#000' }}>Tío/a</option>
+                  <option value="Hermano/a" style={{ color: '#000' }}>Hermano/a</option>
+                  <option value="Tutor/a Legal" style={{ color: '#000' }}>Tutor/a Legal</option>
+                  <option value="Otro" style={{ color: '#000' }}>Otro</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Dirección del apoderado o tutor responsable</label>
+                <input type="text" name="direccion" className="glass-input" placeholder="Ej. Calle Falsa 123" required />
+              </div>
+              <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Teléfono (Prioridad 1)</label>
-                <input type="tel" name="telefono" className="glass-input" placeholder="+56 9 1234 5678" required style={{ borderLeft: '3px solid #60a5fa' }} />
+                <input type="tel" name="telefono" className="glass-input" placeholder="+56982671261" maxLength={12} required style={{ borderLeft: '3px solid #60a5fa' }} />
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Correo Electrónico (Prioridad 2)</label>

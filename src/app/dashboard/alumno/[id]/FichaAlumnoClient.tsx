@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import GanttCalendar from '@/components/GanttCalendar';
+import toast from 'react-hot-toast';
 
 interface FichaAlumnoClientProps {
   alumno: any;
@@ -77,34 +78,14 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
           </div>
           
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-            {/* Foto del Alumno */}
+            {/* Foto / Ícono del Alumno */}
             <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
               <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid rgba(96, 165, 250, 0.5)' }}>
-                {alumno.fotoUrl ? (
-                  <img src={alumno.fotoUrl} alt={alumno.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke={alumno.sexo === 'Niña' ? '#f472b6' : '#60a5fa'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                )}
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke={alumno.sexo === 'Niña' ? '#f472b6' : '#60a5fa'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
               </div>
-              <form action={async (formData) => {
-                const { uploadStudentPhotoAction } = await import('@/app/actions/student');
-                formData.append('studentId', alumno.id.toString());
-                const res = await uploadStudentPhotoAction(formData);
-                if (res.success) window.location.reload();
-                else alert(res.error);
-              }}>
-                <label className="glass-button" style={{ padding: '4px 8px', fontSize: '0.75rem', cursor: 'pointer', display: 'inline-block', textAlign: 'center' }}>
-                  Cargar imagen
-                  <input type="file" name="foto" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
-                    if (e.target.form) {
-                      e.target.form.requestSubmit();
-                    }
-                  }} />
-                </label>
-              </form>
             </div>
 
             {/* Datos */}
@@ -147,13 +128,13 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
                 <input 
                   type="text" 
                   readOnly 
-                  value={`http://localhost:3000/portal/${alumno.token || alumno.id}`} 
+                  value={`${typeof window !== 'undefined' ? window.location.origin : ''}/portal/${alumno.token || alumno.id}`} 
                   className="glass-input" 
                   style={{ flex: 1, padding: '6px 12px', fontSize: '0.875rem', color: '#fff', background: 'rgba(0,0,0,0.2)' }} 
                 />
                 <button 
                   type="button" 
-                  onClick={() => { navigator.clipboard.writeText(`http://localhost:3000/portal/${alumno.token || alumno.id}`); alert('Enlace copiado'); }} 
+                  onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/portal/${alumno.token || alumno.id}`); alert('Enlace copiado'); }} 
                   className="glass-button" 
                   style={{ padding: '6px 12px', fontSize: '0.875rem' }}
                 >
@@ -177,14 +158,31 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
               const res = await createMaterialAction(formData);
               if (res.success) {
                 setUploadSuccess(true);
-                // Forzar actualización suave del historial
+                toast.success('¡Material subido con éxito!');
+                
+                // Add to local state for immediate feedback
+                const newMaterial = {
+                  id: res.materialId,
+                  actividad: formData.get('actividad'),
+                  asignatura: formData.get('asignatura'),
+                  profesor: user.nombre, // Using current user's name
+                  inicio: formData.get('fecha_inicio'),
+                  termino: formData.get('fecha_termino'),
+                  estado: 'Pendiente',
+                  link: formData.get('link_drive') || '#',
+                  fecha_apertura: null,
+                  professionalId: user.id
+                };
+                setHistorial(prev => [newMaterial, ...prev]);
+                
+                // Forzar actualización suave del historial (server side)
                 router.refresh();
               } else {
-                alert(res.error);
+                toast.error(res.error || 'Error al subir material');
               }
             } catch (err) {
               console.error(err);
-              alert('Error de conexión con el servidor. Intente nuevamente.');
+              toast.error('Error de conexión con el servidor. Intente nuevamente.');
             } finally {
               setIsUploading(false);
             }
@@ -230,12 +228,8 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
             </div>
             <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <div style={{ flex: 1, minWidth: '300px' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Link Google Docs / Drive (Opcional)</label>
-                <input type="url" name="link_drive" className="glass-input" placeholder="https://docs.google.com/..." />
-              </div>
-              <div style={{ flex: 1, minWidth: '300px' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Archivo Físico (PDF, Doc) (Opcional)</label>
-                <input type="file" name="archivo" className="glass-input" style={{ padding: '8px' }} />
+                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Enlace de Material Externo (Drive, Docs, YouTube)</label>
+                <input type="url" name="link_drive" className="glass-input" placeholder="https://docs.google.com/..." required />
               </div>
             </div>
             <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
@@ -252,8 +246,8 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
               </p>
               <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: '#cbd5e1' }}>Comparte este enlace único con el apoderado para que acceda al material:</p>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input type="text" readOnly value={`http://localhost:3000/portal/${alumno.token || alumno.id}`} className="glass-input" style={{ flex: 1, padding: '8px 12px', fontSize: '0.875rem', color: '#fff' }} />
-                <button type="button" onClick={() => { navigator.clipboard.writeText(`http://localhost:3000/portal/${alumno.token || alumno.id}`); alert('Enlace copiado al portapapeles'); }} className="glass-button primary" style={{ padding: '8px 16px', fontSize: '0.875rem' }}>Copiar Link</button>
+                <input type="text" readOnly value={`${typeof window !== 'undefined' ? window.location.origin : ''}/portal/${alumno.token || alumno.id}`} className="glass-input" style={{ flex: 1, padding: '8px 12px', fontSize: '0.875rem', color: '#fff' }} />
+                <button type="button" onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/portal/${alumno.token || alumno.id}`); alert('Enlace copiado al portapapeles'); }} className="glass-button primary" style={{ padding: '8px 16px', fontSize: '0.875rem' }}>Copiar Link</button>
               </div>
             </div>
           )}
@@ -343,9 +337,11 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
                               const { deleteMaterialAction } = await import('@/app/actions/material');
                               const res = await deleteMaterialAction(row.id);
                               if (res.success) {
-                                window.location.reload();
+                                toast.success('Material eliminado');
+                                setHistorial(prev => prev.filter((m: any) => m.id !== row.id));
+                                router.refresh();
                               } else {
-                                alert(res.error);
+                                toast.error(res.error || 'Error al eliminar');
                               }
                             }
                           }}

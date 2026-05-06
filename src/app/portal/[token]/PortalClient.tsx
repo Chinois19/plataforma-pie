@@ -146,20 +146,6 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         Abrir Google Docs
                       </button>
-                    ) : item.archivoUrl ? (
-                      <button 
-                        onClick={async () => {
-                          await markMaterialAsAccessedAction(item.id);
-                          window.open(item.archivoUrl, '_blank');
-                          window.location.reload();
-                        }}
-                        className="glass-button primary" 
-                        style={{ width: '100%', maxWidth: '300px', padding: '14px 24px', fontSize: '1rem', fontWeight: 'bold', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center', border: 'none', cursor: 'pointer' }}
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Descargar Archivo
-                      </button>
-                    ) : (
                       <button disabled className="glass-button" style={{ width: '100%', maxWidth: '300px', padding: '14px 24px', opacity: 0.5 }}>
                         Sin archivo ni link
                       </button>
