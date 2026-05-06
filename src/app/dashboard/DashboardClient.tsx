@@ -60,9 +60,17 @@ export default function DashboardClient({ initialAlumnos, initialAuditoria, user
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {alumnos.map(alumno => (
                 <li key={alumno.id} style={{ background: 'var(--glass-bg-subtle)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--glass-border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <h4 style={{ margin: 0, fontSize: '1.1rem' }}>{alumno.nombre}</h4>
-                    <span style={{ fontSize: '0.875rem', color: 'var(--foreground-muted)' }}>{alumno.curso}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${alumno.sexo === 'Niña' ? '#f472b644' : '#60a5fa44'}` }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={alumno.sexo === 'Niña' ? '#f472b6' : '#60a5fa'} strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '1.1rem' }}>{alumno.nombre}</h4>
+                      <span style={{ fontSize: '0.875rem', color: 'var(--foreground-muted)' }}>{alumno.curso}</span>
+                    </div>
                   </div>
                   <Link href={`/dashboard/alumno/${alumno.id}`} className="glass-button primary" style={{ padding: '6px 12px', fontSize: '0.875rem' }}>
                     Ver Ficha
