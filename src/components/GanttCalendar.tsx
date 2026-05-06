@@ -9,6 +9,12 @@ interface GanttCalendarProps {
 export default function GanttCalendar({ materiales }: GanttCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
+  const [hoveredItem, setHoveredItem] = useState<any>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  };
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -88,7 +94,37 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
   const profesionales = Object.keys(groupedByProf);
 
   return (
-    <section className="glass-panel" style={{ padding: '2rem' }}>
+    <section className="glass-panel" style={{ padding: '2rem', position: 'relative' }} onMouseMove={handleMouseMove}>
+      {/* Tooltip Personalizado */}
+      {hoveredItem && (
+        <div style={{
+          position: 'fixed',
+          top: mousePos.y + 15,
+          left: mousePos.x + 15,
+          background: 'rgba(15, 23, 42, 0.95)',
+          color: 'white',
+          padding: '1rem',
+          borderRadius: '12px',
+          border: '1px solid rgba(59, 130, 246, 0.5)',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+          zIndex: 9999,
+          pointerEvents: 'none',
+          minWidth: '250px',
+          backdropFilter: 'blur(8px)'
+        }}>
+          <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold', color: '#60a5fa', fontSize: '0.9rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.25rem' }}>
+            {hoveredItem.actividad}
+          </p>
+          <p style={{ margin: '0.25rem 0', fontSize: '0.75rem' }}><strong>Profesional:</strong> {hoveredItem.profesor}</p>
+          <p style={{ margin: '0.25rem 0', fontSize: '0.75rem' }}><strong>Inicio:</strong> {hoveredItem.inicio}</p>
+          <p style={{ margin: '0.25rem 0', fontSize: '0.75rem' }}><strong>Término:</strong> {hoveredItem.termino}</p>
+          <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+             <span style={{ width: '8px', height: '8px', background: hoveredItem.color, borderRadius: '50%' }}></span>
+             <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: hoveredItem.color }}>{hoveredItem.estado}</span>
+          </div>
+        </div>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h2 style={{ fontSize: '1.5rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
@@ -151,18 +187,23 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
 
               {!collapsedGroups.includes(prof) && groupedByProf[prof].map((item: any) => (
                 <div key={item.id} style={{ display: 'grid', gridTemplateColumns: `200px repeat(${daysInMonth}, 1fr)`, gap: '2px', marginBottom: '4px', alignItems: 'center' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--foreground-subtle)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingLeft: '1.5rem', paddingRight: '0.5rem' }} title={item.actividad}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--foreground-subtle)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingLeft: '1.5rem', paddingRight: '0.5rem' }}>
                     {item.actividad}
                   </div>
-                  <div style={{ 
-                    gridColumn: `${item.startDay + 1} / span ${item.span}`, 
-                    background: item.color + '33', 
-                    border: `1px solid ${item.color}88`, 
-                    borderRadius: '4px', 
-                    height: '24px', 
-                    position: 'relative',
-                    cursor: 'help'
-                  }} title={`ACTIVIDAD: ${item.actividad}\nPROFESIONAL: ${item.profesor}\nINICIO: ${item.inicio}\nTÉRMINO: ${item.termino}\nESTADO: ${item.estado}`}>
+                  <div 
+                    onMouseEnter={() => setHoveredItem(item)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    style={{ 
+                      gridColumn: `${item.startDay + 1} / span ${item.span}`, 
+                      background: item.color + '33', 
+                      border: `1px solid ${item.color}88`, 
+                      borderRadius: '4px', 
+                      height: '24px', 
+                      position: 'relative',
+                      cursor: 'help',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
                     {item.isOverdue && (
                       <span style={{ 
                         position: 'absolute', 

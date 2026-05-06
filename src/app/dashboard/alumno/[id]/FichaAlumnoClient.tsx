@@ -304,13 +304,17 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
                     <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{row.profesor}</td>
                     <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{row.inicio} / {row.termino}</td>
                     <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                      {row.fecha_apertura ? (
-                        <span style={{ color: '#60a5fa', fontWeight: 'bold' }}>
-                          {formatTimeInUse(row.fecha_apertura)}
-                        </span>
-                      ) : (
-                        <span style={{ color: '#94a3b8' }}>Sin abrir</span>
-                      )}
+                      <span style={{ color: '#60a5fa', fontWeight: 'bold' }}>
+                        {(() => {
+                          const seconds = row.tiempo_total_segundos || 0;
+                          if (seconds < 60) return `${seconds} seg.`;
+                          const mins = Math.floor(seconds / 60);
+                          if (mins < 60) return `${mins} min.`;
+                          const hrs = Math.floor(mins / 60);
+                          const rem = mins % 60;
+                          return `${hrs}h ${rem}m`;
+                        })()}
+                      </span>
                     </td>
                     <td style={{ padding: '1rem' }}>
                       {(() => {

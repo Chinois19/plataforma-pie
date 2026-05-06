@@ -92,3 +92,20 @@ export async function deleteMaterialAction(materialId: number) {
     return { success: false, error: 'Error al eliminar material' };
   }
 }
+
+export async function incrementMaterialTimeAction(materialId: number, seconds: number) {
+  try {
+    await prisma.material.update({
+      where: { id: materialId },
+      data: {
+        tiempo_total_segundos: {
+          increment: seconds
+        }
+      }
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error al incrementar tiempo:', error);
+    return { success: false };
+  }
+}

@@ -1,7 +1,5 @@
-'use client';
-
-import { useState } from 'react';
-import { markMaterialAsAccessedAction } from '@/app/actions/material';
+import { useState, useEffect, useRef } from 'react';
+import { markMaterialAsAccessedAction, incrementMaterialTimeAction } from '@/app/actions/material';
 import GanttCalendar from '@/components/GanttCalendar';
 
 interface PortalClientProps {
@@ -12,17 +10,29 @@ interface PortalClientProps {
 export default function PortalClient({ alumno, materiales }: PortalClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const formatTimeInUse = (fechaApertura: string | null) => {
-    if (!fechaApertura) return '';
-    const diffMs = new Date().getTime() - new Date(fechaApertura).getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
-    if (diffMins < 60) return `Hace ${diffMins} min.`;
-    if (diffHrs < 24) return `Hace ${diffHrs} h.`;
-    return `Hace ${diffDays} días`;
+  const formatTotalTime = (seconds: number) => {
+    if (!seconds) return '0 min.';
+    if (seconds < 60) return `${seconds} seg.`;
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    if (mins < 60) return `${mins}m ${secs}s`;
+    const hrs = Math.floor(mins / 60);
+    const remainingMins = mins % 60;
+    return `${hrs}h ${remainingMins}m`;
   };
+
+  // Tracking activo para el tiempo en uso
+  const [activeMaterialId, setActiveMaterialId] = useState<number | null>(null);
+  
+  useEffect(() => {
+    if (!activeMaterialId) return;
+
+    const interval = setInterval(async () => {
+      await incrementMaterialTimeAction(activeMaterialId, 10);
+    }, 10000); // Heartbeat cada 10 segundos
+
+    return () => clearInterval(interval);
+  }, [activeMaterialId]);
 
   // Separar materiales por estado
   const materialPendiente = materiales.filter(m => m.estado !== 'Completado');
@@ -114,11 +124,9 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
                 }}>
                   <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'var(--glass-bg-subtle)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--foreground-muted)' }}>
                      Subido: {item.carga}
-                     {item.fecha_apertura && (
-                       <span style={{ display: 'block', marginTop: '4px', color: '#60a5fa', fontWeight: 'bold' }}>
-                         En uso: {formatTimeInUse(item.fecha_apertura)}
-                       </span>
-                     )}
+                     <span style={{ display: 'block', marginTop: '4px', color: '#60a5fa', fontWeight: 'bold' }}>
+                       Tiempo trabajado: {formatTotalTime(item.tiempo_total_segundos)}
+                     </span>
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginTop: '1rem' }}>
@@ -161,9 +169,9 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
                     {item.link && item.link !== '#' ? (
                       <button 
                         onClick={async () => {
+                          setActiveMaterialId(item.id);
                           await markMaterialAsAccessedAction(item.id);
                           window.open(item.link, '_blank');
-                          window.location.reload();
                         }}
                         className="glass-button primary" 
                         style={{ width: '100%', maxWidth: '300px', padding: '14px 24px', fontSize: '1rem', fontWeight: 'bold', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center', border: 'none', cursor: 'pointer' }}

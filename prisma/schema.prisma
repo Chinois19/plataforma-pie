@@ -55,6 +55,7 @@ model Material {
   archivo_url     String?
   archivoUrl      String?
   fecha_apertura  DateTime?
+  tiempo_total_segundos Int @default(0)
 
   professionalId  Int
   professional    Professional @relation(fields: [professionalId], references: [id])
