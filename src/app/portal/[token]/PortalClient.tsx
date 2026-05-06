@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useRef } from 'react';
 import { markMaterialAsAccessedAction, incrementMaterialTimeAction } from '@/app/actions/material';
 import GanttCalendar from '@/components/GanttCalendar';
