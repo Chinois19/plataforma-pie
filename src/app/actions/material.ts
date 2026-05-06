@@ -67,7 +67,7 @@ export async function markMaterialAsAccessedAction(materialId: number) {
     // Solo actualizamos la fecha de apertura si no se ha abierto antes
     const dataToUpdate: any = {
       acceso: 'Accedido',
-      estado: 'En Curso'
+      estado: 'Completado'
     };
 
     if (!material.fecha_apertura) {

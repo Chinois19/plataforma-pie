@@ -412,15 +412,23 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
                         let textColor = '#4ade80';
                         let label = row.estado;
 
-                        if (row.estado !== 'Completado') {
+                        if (row.estado === 'Completado') {
+                          bgColor = 'rgba(74, 222, 128, 0.2)';
+                          textColor = '#4ade80';
+                          label = 'Realizada';
+                        } else {
                           if (diffDays < 0) {
                             bgColor = 'rgba(248, 113, 113, 0.2)';
                             textColor = '#f87171';
-                            label = 'Atrasado';
+                            label = 'Atrasada';
                           } else if (diffDays <= 3) {
                             bgColor = 'rgba(250, 204, 21, 0.2)';
                             textColor = '#facc15';
-                            label = 'Próximo';
+                            label = 'Próxima';
+                          } else {
+                            bgColor = 'rgba(96, 165, 250, 0.2)';
+                            textColor = '#60a5fa';
+                            label = 'Pendiente';
                           }
                         }
 

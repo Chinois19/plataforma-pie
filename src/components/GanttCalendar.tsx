@@ -157,9 +157,9 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
                color: hoveredItem.color, 
                textTransform: 'uppercase' 
              }}>
-               {hoveredItem.estado === 'Completado' ? 'Completado' : 
-                hoveredItem.color === '#f87171' ? 'Atrasado' : 
-                hoveredItem.color === '#facc15' ? 'Próximo a Vencer' : 'En Tiempo'}
+               {hoveredItem.estado === 'Completado' ? 'Realizada' : 
+                hoveredItem.color === '#f87171' ? 'Atrasada' : 
+                hoveredItem.color === '#facc15' ? 'Próxima' : 'Pendiente'}
              </span>
           </div>
         </div>
@@ -173,9 +173,9 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
         
         {/* Leyenda Semáforo */}
         <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><span style={{ width: '8px', height: '8px', background: '#f87171', borderRadius: '50%' }}></span> Atrasado</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><span style={{ width: '8px', height: '8px', background: '#facc15', borderRadius: '50%' }}></span> Próximo Vence</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }}></span> En Tiempo / Ok</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><span style={{ width: '8px', height: '8px', background: '#f87171', borderRadius: '50%' }}></span> Atrasada</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><span style={{ width: '8px', height: '8px', background: '#facc15', borderRadius: '50%' }}></span> Próxima</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }}></span> Realizada</div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--glass-bg-subtle)', padding: '0.5rem', borderRadius: '12px' }}>
