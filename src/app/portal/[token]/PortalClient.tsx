@@ -38,24 +38,32 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
   return (
     <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Header */}
-      <header className="glass-panel" style={{ width: '100%', maxWidth: '1000px', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '3rem' }}>
-        <span style={{ 
-          display: 'inline-block',
-          padding: '4px 12px', 
-          borderRadius: '20px', 
-          background: 'rgba(59, 130, 246, 0.1)',
-          color: '#60a5fa',
-          fontSize: '0.875rem',
-          fontWeight: 600,
-          marginBottom: '1rem',
-          border: '1px solid rgba(59, 130, 246, 0.2)'
-        }}>
-          Escuela Pucara Alto - Equipo PIE
-        </span>
-        <h1 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0' }}>Portal Familiar</h1>
-        <p style={{ color: '#cbd5e1', fontSize: '1.1rem', margin: 0 }}>
-          Material Educativo de <strong>{alumno.nombre}</strong> ({alumno.curso})
-        </p>
+      <header className="glass-panel" style={{ width: '100%', maxWidth: '1000px', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '3rem', position: 'relative', overflow: 'hidden' }}>
+        
+        {/* Marca de agua del logo en el recuadro */}
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 0.08, zIndex: 0, pointerEvents: 'none' }}>
+          <img src="/logo.jpg" alt="" style={{ height: '140px', filter: 'grayscale(100%)', opacity: 0.5 }} />
+        </div>
+
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <span style={{ 
+            display: 'inline-block',
+            padding: '4px 12px', 
+            borderRadius: '20px', 
+            background: 'rgba(59, 130, 246, 0.1)',
+            color: '#60a5fa',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            marginBottom: '1rem',
+            border: '1px solid rgba(59, 130, 246, 0.2)'
+          }}>
+            Escuela Pucara Alto - Equipo PIE
+          </span>
+          <h1 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0' }}>Portal Familiar</h1>
+          <p style={{ color: '#cbd5e1', fontSize: '1.1rem', margin: 0 }}>
+            Material Educativo de <strong>{alumno.nombre}</strong> ({alumno.curso})
+          </p>
+        </div>
       </header>
 
       <main style={{ width: '100%', maxWidth: '1000px', display: 'flex', flexDirection: 'column', gap: '3rem' }}>

@@ -21,12 +21,18 @@ export default function DashboardClient({ initialAlumnos, initialAuditoria, user
     <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       
       {/* Navbar */}
-      <header className="glass-panel" style={{ width: '100%', maxWidth: '1000px', padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div>
-          <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Panel PIE</h2>
-          <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Escuela Pucara Alto - {user.nombre} ({user.rol})</span>
+      <header className="glass-panel" style={{ width: '100%', maxWidth: '1000px', padding: '1.5rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', position: 'relative', overflow: 'hidden' }}>
+        
+        {/* Marca de agua del logo en el recuadro */}
+        <div style={{ position: 'absolute', top: '50%', left: '20%', transform: 'translate(-50%, -50%)', opacity: 0.08, zIndex: 0, pointerEvents: 'none' }}>
+          <img src="/logo.jpg" alt="" style={{ height: '140px', filter: 'grayscale(100%)', opacity: 0.5 }} />
         </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column' }}>
+          <h2 style={{ fontSize: '1.5rem', margin: 0 }}>Panel PIE</h2>
+          <span style={{ fontSize: '0.875rem', color: '#94a3b8', marginTop: '4px' }}>Escuela Pucara Alto - {user.nombre} ({user.rol})</span>
+        </div>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: '1rem' }}>
           {user.isAdmin && (
             <Link href="/dashboard/profesionales" className="glass-button primary" style={{ padding: '8px 16px', fontSize: '0.875rem' }}>
               Gestión Profesionales
