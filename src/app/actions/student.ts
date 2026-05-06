@@ -47,3 +47,41 @@ export async function createStudentAction(formData: FormData) {
   return { success: true };
 }
 
+export async function updateStudentAction(studentId: number, formData: FormData) {
+  const nombre = formData.get('nombre') as string;
+  const rut = formData.get('rut') as string;
+  const curso = formData.get('curso') as string;
+  const diagnostico = formData.get('diagnostico') as string;
+  const apoderado = formData.get('apoderado') as string;
+  const telefono = formData.get('telefono') as string;
+  const direccion = formData.get('direccion') as string;
+  const parentesco = formData.get('parentesco') as string;
+  const correo = formData.get('correo') as string;
+  const sexo = formData.get('sexo') as string;
+  const fechaNacimiento = formData.get('fechaNacimiento') as string;
+
+  try {
+    await prisma.student.update({
+      where: { id: studentId },
+      data: {
+        nombre,
+        rut,
+        curso,
+        diagnostico,
+        apoderado,
+        direccion,
+        parentesco,
+        telefono,
+        correo: correo || '',
+        sexo: sexo || 'No especificado',
+        fechaNacimiento
+      }
+    });
+    
+    revalidatePath(`/dashboard/alumno/${studentId}`);
+    return { success: true };
+  } catch (error: any) {
+    console.error('ERROR AL ACTUALIZAR ALUMNO:', error);
+    return { success: false, error: 'Error al actualizar los datos del alumno.' };
+  }
+}

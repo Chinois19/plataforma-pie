@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import GanttCalendar from '@/components/GanttCalendar';
 import toast from 'react-hot-toast';
+import { updateStudentAction } from '@/app/actions/student';
 
 interface FichaAlumnoClientProps {
   alumno: any;
@@ -19,6 +20,8 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
   const [searchTerm, setSearchTerm] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isEditingAntecedentes, setIsEditingAntecedentes] = useState(false);
+  const [isSavingAntecedentes, setIsSavingAntecedentes] = useState(false);
 
   const formatTimeInUse = (fechaApertura: string | null) => {
     if (!fechaApertura) return 'Sin abrir';
@@ -79,76 +82,157 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
         <section className="glass-panel" style={{ padding: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
             <h3 style={{ fontSize: '1.5rem', margin: 0 }}>Antecedentes del Estudiante</h3>
-            <button className="glass-button" style={{ padding: '6px 12px', fontSize: '0.875rem' }}>Modificar</button>
+            <button 
+              onClick={() => setIsEditingAntecedentes(!isEditingAntecedentes)} 
+              className="glass-button" 
+              style={{ padding: '6px 12px', fontSize: '0.875rem' }}
+            >
+              {isEditingAntecedentes ? 'Cancelar' : 'Modificar'}
+            </button>
           </div>
           
-          <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-            {/* Foto / Ícono del Alumno */}
-            <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid rgba(96, 165, 250, 0.5)' }}>
-                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke={alumno.sexo === 'Niña' ? '#f472b6' : '#60a5fa'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
+          {isEditingAntecedentes ? (
+            <form action={async (formData) => {
+              setIsSavingAntecedentes(true);
+              try {
+                const res = await updateStudentAction(alumno.id, formData);
+                if (res.success) {
+                  toast.success('Datos actualizados correctamente');
+                  setIsEditingAntecedentes(false);
+                  router.refresh();
+                } else {
+                  toast.error(res.error || 'Error al actualizar');
+                }
+              } catch (err) {
+                toast.error('Error de conexión');
+              } finally {
+                setIsSavingAntecedentes(false);
+              }
+            }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Nombre Completo</label>
+                <input type="text" name="nombre" defaultValue={alumno.nombre} className="glass-input" required />
               </div>
-            </div>
-
-            {/* Datos */}
-            <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Nombre Completo</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.nombre}</p>
-            </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>RUT</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.rut}</p>
-            </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Curso y Diagnóstico</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.curso} - {alumno.diagnostico}</p>
-            </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Sexo</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.sexo || 'No especificado'}</p>
-            </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Fecha de Nacimiento</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.fechaNacimiento || 'No especificada'}</p>
-            </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Adulto a Cargo</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.apoderado}</p>
-            </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#60a5fa' }}>Teléfono (Prioridad 1)</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.telefono}</p>
-            </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Correo Electrónico</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.correo}</p>
-            </div>
-            <div style={{ gridColumn: '1 / -1', marginTop: '1rem', padding: '1rem', background: 'rgba(96, 165, 250, 0.05)', borderRadius: '8px', border: '1px solid rgba(96, 165, 250, 0.2)' }}>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#60a5fa', marginBottom: '0.5rem' }}>Enlace de Acceso Familiar (Único)</p>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input 
-                  type="text" 
-                  readOnly 
-                  value={`${typeof window !== 'undefined' ? window.location.origin : ''}/portal/${alumno.token || alumno.id}`} 
-                  className="glass-input" 
-                  style={{ flex: 1, padding: '6px 12px', fontSize: '0.875rem', color: 'var(--foreground)', background: 'var(--glass-bg-subtle)' }} 
-                />
-                <button 
-                  type="button" 
-                  onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/portal/${alumno.token || alumno.id}`); alert('Enlace copiado'); }} 
-                  className="glass-button" 
-                  style={{ padding: '6px 12px', fontSize: '0.875rem' }}
-                >
-                  Copiar
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>RUT</label>
+                <input type="text" name="rut" defaultValue={alumno.rut} className="glass-input" required />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Curso</label>
+                <input type="text" name="curso" defaultValue={alumno.curso} className="glass-input" required />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Diagnóstico</label>
+                <input type="text" name="diagnostico" defaultValue={alumno.diagnostico} className="glass-input" required />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Sexo</label>
+                <select name="sexo" defaultValue={alumno.sexo} className="glass-input" style={{ width: '100%', appearance: 'none', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                  <option value="Niño" style={{ color: '#000' }}>Niño</option>
+                  <option value="Niña" style={{ color: '#000' }}>Niña</option>
+                  <option value="No especificado" style={{ color: '#000' }}>No especificado</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Fecha de Nacimiento</label>
+                <input type="date" name="fechaNacimiento" defaultValue={alumno.fechaNacimiento} className="glass-input" />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Adulto a Cargo</label>
+                <input type="text" name="apoderado" defaultValue={alumno.apoderado} className="glass-input" required />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Teléfono</label>
+                <input type="text" name="telefono" defaultValue={alumno.telefono} className="glass-input" required />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Correo Electrónico</label>
+                <input type="email" name="correo" defaultValue={alumno.correo} className="glass-input" required />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Dirección</label>
+                <input type="text" name="direccion" defaultValue={alumno.direccion} className="glass-input" />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Parentesco</label>
+                <input type="text" name="parentesco" defaultValue={alumno.parentesco} className="glass-input" />
+              </div>
+              
+              <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                <button type="submit" disabled={isSavingAntecedentes} className="glass-button primary" style={{ padding: '8px 20px' }}>
+                  {isSavingAntecedentes ? 'Guardando...' : 'Guardar Cambios'}
                 </button>
               </div>
+            </form>
+          ) : (
+            <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+              {/* Foto / Ícono del Alumno */}
+              <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid rgba(96, 165, 250, 0.5)' }}>
+                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke={alumno.sexo === 'Niña' ? '#f472b6' : '#60a5fa'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Datos */}
+              <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                <div>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Nombre Completo</p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.nombre}</p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>RUT</p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.rut}</p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Curso y Diagnóstico</p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.curso} - {alumno.diagnostico}</p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Sexo</p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.sexo || 'No especificado'}</p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Fecha de Nacimiento</p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.fechaNacimiento || 'No especificada'}</p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Adulto a Cargo</p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.apoderado}</p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#60a5fa' }}>Teléfono (Prioridad 1)</p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.telefono}</p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Correo Electrónico</p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontWeight: 'bold' }}>{alumno.correo}</p>
+                </div>
+                <div style={{ gridColumn: '1 / -1', marginTop: '1rem', padding: '1rem', background: 'rgba(96, 165, 250, 0.05)', borderRadius: '8px', border: '1px solid rgba(96, 165, 250, 0.2)' }}>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#60a5fa', marginBottom: '0.5rem' }}>Enlace de Acceso Familiar (Único)</p>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input 
+                      type="text" 
+                      readOnly 
+                      value={`${typeof window !== 'undefined' ? window.location.origin : ''}/portal/${alumno.token || alumno.id}`} 
+                      className="glass-input" 
+                      style={{ flex: 1, padding: '6px 12px', fontSize: '0.875rem', color: 'var(--foreground)', background: 'var(--glass-bg-subtle)' }} 
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/portal/${alumno.token || alumno.id}`); alert('Enlace copiado'); }} 
+                      className="glass-button" 
+                      style={{ padding: '6px 12px', fontSize: '0.875rem' }}
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            </div>
-          </div>
+          )}
         </section>
 
         {/* Sección: Cargar Material */}

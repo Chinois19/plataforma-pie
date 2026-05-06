@@ -23,6 +23,10 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const calendarDays = Array.from({length: daysInMonth}, (_, i) => i + 1);
 
+  const today = new Date();
+  const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
+  const todayDay = isCurrentMonth ? today.getDate() : null;
+
   // Función para obtener el día del mes si coincide con el mes actual, o ajustar a los bordes
   const getDayBoundsForMonth = (dateStr: string) => {
     if (!dateStr) return null;
@@ -95,7 +99,7 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
 
   return (
     <section className="glass-panel" style={{ padding: '2rem', position: 'relative' }} onMouseMove={handleMouseMove}>
-      {/* Tooltip Personalizado */}
+      {/* Tooltip Personalizado Premium */}
       {hoveredItem && (
         <div style={{
           position: 'fixed',
@@ -103,24 +107,60 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
           left: mousePos.x + 15,
           background: 'rgba(15, 23, 42, 0.95)',
           color: 'white',
-          padding: '1rem',
-          borderRadius: '12px',
-          border: '1px solid rgba(59, 130, 246, 0.5)',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+          padding: '1.25rem',
+          borderRadius: '16px',
+          border: `1px solid ${hoveredItem.color}88`,
+          boxShadow: `0 10px 40px -10px rgba(0,0,0,0.7), 0 0 20px ${hoveredItem.color}22`,
           zIndex: 9999,
           pointerEvents: 'none',
-          minWidth: '250px',
-          backdropFilter: 'blur(8px)'
+          minWidth: '280px',
+          backdropFilter: 'blur(12px)',
+          transition: 'all 0.1s ease-out'
         }}>
-          <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold', color: '#60a5fa', fontSize: '0.9rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.25rem' }}>
-            {hoveredItem.actividad}
-          </p>
-          <p style={{ margin: '0.25rem 0', fontSize: '0.75rem' }}><strong>Profesional:</strong> {hoveredItem.profesor}</p>
-          <p style={{ margin: '0.25rem 0', fontSize: '0.75rem' }}><strong>Inicio:</strong> {hoveredItem.inicio}</p>
-          <p style={{ margin: '0.25rem 0', fontSize: '0.75rem' }}><strong>Término:</strong> {hoveredItem.termino}</p>
-          <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-             <span style={{ width: '8px', height: '8px', background: hoveredItem.color, borderRadius: '50%' }}></span>
-             <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: hoveredItem.color }}>{hoveredItem.estado}</span>
+          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
+             <h4 style={{ margin: 0, color: '#60a5fa', fontSize: '1rem', fontWeight: 700 }}>{hoveredItem.actividad}</h4>
+             <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Detalles de Actividad</span>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span style={{ fontSize: '0.8rem' }}><strong>Profesional:</strong> {hoveredItem.profesor}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <span style={{ fontSize: '0.8rem' }}><strong>Periodo:</strong> {hoveredItem.inicio} al {hoveredItem.termino}</span>
+            </div>
+          </div>
+
+          <div style={{ 
+            marginTop: '1rem', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.6rem',
+            background: `${hoveredItem.color}15`,
+            padding: '6px 12px',
+            borderRadius: '8px',
+            border: `1px solid ${hoveredItem.color}33`,
+            width: 'fit-content'
+          }}>
+             <span style={{ 
+               width: '10px', 
+               height: '10px', 
+               background: hoveredItem.color, 
+               borderRadius: '50%', 
+               boxShadow: `0 0 10px ${hoveredItem.color}` 
+             }}></span>
+             <span style={{ 
+               fontSize: '0.75rem', 
+               fontWeight: 'bold', 
+               color: hoveredItem.color, 
+               textTransform: 'uppercase' 
+             }}>
+               {hoveredItem.estado === 'Completado' ? 'Completado' : 
+                hoveredItem.color === '#f87171' ? 'Atrasado' : 
+                hoveredItem.color === '#facc15' ? 'Próximo a Vencer' : 'En Tiempo'}
+             </span>
           </div>
         </div>
       )}
@@ -146,13 +186,55 @@ export default function GanttCalendar({ materiales }: GanttCalendarProps) {
         </div>
       </div>
 
-      <div style={{ overflowX: 'auto', paddingBottom: '1rem' }}>
-        <div style={{ minWidth: '800px' }}>
+      <div style={{ overflowX: 'auto', paddingBottom: '1rem', position: 'relative' }}>
+        <div style={{ minWidth: '800px', position: 'relative' }}>
+          {/* Línea de "Hoy" que cruza todo el calendario */}
+          {isCurrentMonth && todayDay && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: `calc(200px + (${todayDay} - 0.5) * (100% - 200px) / ${daysInMonth})`,
+              width: '2px',
+              backgroundColor: '#60a5fa',
+              boxShadow: '0 0 10px rgba(96, 165, 250, 0.5)',
+              zIndex: 5,
+              pointerEvents: 'none',
+              opacity: 0.6
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: '-10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: '#60a5fa',
+                color: 'white',
+                fontSize: '0.6rem',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontWeight: 'bold',
+                whiteSpace: 'nowrap'
+              }}>
+                HOY
+              </div>
+            </div>
+          )}
           {/* Encabezado de días */}
           <div style={{ display: 'grid', gridTemplateColumns: `200px repeat(${daysInMonth}, 1fr)`, gap: '2px', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border-subtle)', paddingBottom: '0.5rem' }}>
             <div style={{ fontSize: '0.875rem', color: 'var(--foreground-muted)', fontWeight: 'bold' }}>Profesional / Actividad</div>
             {calendarDays.map(day => (
-              <div key={day} style={{ textAlign: 'center', fontSize: '0.65rem', color: 'var(--foreground-muted)' }}>
+              <div 
+                key={day} 
+                style={{ 
+                  textAlign: 'center', 
+                  fontSize: '0.65rem', 
+                  color: day === todayDay ? '#60a5fa' : 'var(--foreground-muted)',
+                  fontWeight: day === todayDay ? 'bold' : 'normal',
+                  background: day === todayDay ? 'rgba(96, 165, 250, 0.1)' : 'transparent',
+                  borderRadius: '4px',
+                  padding: '2px 0'
+                }}
+              >
                 {day}
               </div>
             ))}
