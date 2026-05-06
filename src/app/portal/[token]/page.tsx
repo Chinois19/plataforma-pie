@@ -6,8 +6,13 @@ export default async function PortalAlumnoPage({ params }: { params: Promise<{ t
   const resolvedParams = await params;
   const token = resolvedParams.token;
 
-  // 1. Fetch student by token
-  const alumno = await getAlumnoByToken(token);
+  // 1. Fetch student by token (or ID as fallback)
+  let alumno = await getAlumnoByToken(token);
+
+  // Fallback: if not found by token, try to find by ID if token is numeric
+  if (!alumno && /^\d+$/.test(token)) {
+    alumno = await getAlumnoById(parseInt(token));
+  }
 
   if (!alumno) {
     // Demo mode or Error
