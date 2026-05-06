@@ -249,22 +249,29 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
                 setUploadSuccess(true);
                 toast.success('¡Material subido con éxito!');
                 
-                // Add to local state for immediate feedback
+                // Formatear fechas para el estado local (Gantt espera DD-MM-YYYY)
+                const formatDateLocal = (dateStr: string) => {
+                  if (!dateStr) return '';
+                  const [y, m, d] = dateStr.split('-');
+                  return `${d}-${m}-${y}`;
+                };
+
                 const newMaterial = {
                   id: res.materialId,
                   actividad: formData.get('actividad'),
                   asignatura: formData.get('asignatura'),
-                  profesor: user.nombre, // Using current user's name
-                  inicio: formData.get('fecha_inicio'),
-                  termino: formData.get('fecha_termino'),
+                  profesor: user.nombre, 
+                  inicio: formatDateLocal(formData.get('fecha_inicio') as string),
+                  termino: formatDateLocal(formData.get('fecha_termino') as string),
+                  carga: formatDateLocal(formData.get('fecha_carga') as string),
                   estado: 'Pendiente',
                   link: formData.get('link_drive') || '#',
                   fecha_apertura: null,
-                  professionalId: user.id
+                  professionalId: user.id,
+                  tiempo_total_segundos: 0
                 };
                 setHistorial(prev => [newMaterial, ...prev]);
                 
-                // Forzar actualización suave del historial (server side)
                 router.refresh();
               } else {
                 toast.error(res.error || 'Error al subir material');

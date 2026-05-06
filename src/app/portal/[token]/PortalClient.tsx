@@ -9,8 +9,13 @@ interface PortalClientProps {
   materiales: any[];
 }
 
-export default function PortalClient({ alumno, materiales }: PortalClientProps) {
+export default function PortalClient({ alumno, materiales: initialMateriales }: PortalClientProps) {
+  const [materiales, setMateriales] = useState(initialMateriales);
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    setMateriales(initialMateriales);
+  }, [initialMateriales]);
 
   const formatTotalTime = (seconds: number) => {
     if (!seconds) return '0 min.';
@@ -173,6 +178,8 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
                         onClick={async () => {
                           setActiveMaterialId(item.id);
                           await markMaterialAsAccessedAction(item.id);
+                          // Actualización local inmediata para los padres
+                          setMateriales(prev => prev.map(m => m.id === item.id ? { ...m, estado: 'Completado' } : m));
                           window.open(item.link, '_blank');
                         }}
                         className="glass-button primary" 
