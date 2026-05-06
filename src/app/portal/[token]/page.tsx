@@ -18,7 +18,7 @@ export default async function PortalAlumnoPage({ params }: { params: Promise<{ t
     // Demo mode or Error
     if (token === 'demo-token' || token === 'DEMO-2024') {
       return (
-        <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+        <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--foreground)' }}>
           <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
             <h2 style={{ color: '#60a5fa' }}>Modo Demostración</h2>
             <p style={{ color: '#94a3b8', marginBottom: '2rem' }}>Este es el portal que verán los apoderados. En el panel real, podrás ver el material cargado por los docentes.</p>
@@ -29,7 +29,7 @@ export default async function PortalAlumnoPage({ params }: { params: Promise<{ t
     }
 
     return (
-      <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+      <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--foreground)' }}>
         <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
           <h2 style={{ color: '#fca5a5' }}>Portal Familiar: Error</h2>
           <p style={{ color: '#94a3b8', marginBottom: '2rem' }}>El enlace no es válido o el alumno no existe.</p>

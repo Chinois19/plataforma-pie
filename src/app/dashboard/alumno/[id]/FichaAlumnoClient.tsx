@@ -135,7 +135,7 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
                   readOnly 
                   value={`${typeof window !== 'undefined' ? window.location.origin : ''}/portal/${alumno.token || alumno.id}`} 
                   className="glass-input" 
-                  style={{ flex: 1, padding: '6px 12px', fontSize: '0.875rem', color: '#fff', background: 'rgba(0,0,0,0.2)' }} 
+                  style={{ flex: 1, padding: '6px 12px', fontSize: '0.875rem', color: 'var(--foreground)', background: 'var(--glass-bg-subtle)' }} 
                 />
                 <button 
                   type="button" 
@@ -253,7 +253,7 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
               </p>
               <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: '#cbd5e1' }}>Comparte este enlace único con el apoderado para que acceda al material:</p>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input type="text" readOnly value={`${typeof window !== 'undefined' ? window.location.origin : ''}/portal/${alumno.token || alumno.id}`} className="glass-input" style={{ flex: 1, padding: '8px 12px', fontSize: '0.875rem', color: '#fff' }} />
+                <input type="text" readOnly value={`${typeof window !== 'undefined' ? window.location.origin : ''}/portal/${alumno.token || alumno.id}`} className="glass-input" style={{ flex: 1, padding: '8px 12px', fontSize: '0.875rem', color: 'var(--foreground)' }} />
                 <button type="button" onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/portal/${alumno.token || alumno.id}`); alert('Enlace copiado al portapapeles'); }} className="glass-button primary" style={{ padding: '8px 16px', fontSize: '0.875rem' }}>Copiar Link</button>
               </div>
             </div>

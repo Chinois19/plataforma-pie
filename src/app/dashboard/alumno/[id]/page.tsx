@@ -21,7 +21,7 @@ export default async function FichaAlumnoPage({ params }: { params: Promise<{ id
 
   if (!alumno) {
     return (
-      <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+      <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--foreground)' }}>
         <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
           <h2 style={{ color: '#fca5a5' }}>Error: Alumno no encontrado</h2>
           <p style={{ color: '#94a3b8', marginBottom: '2rem' }}>El alumno con ID {resolvedParams.id} no existe o fue eliminado.</p>
