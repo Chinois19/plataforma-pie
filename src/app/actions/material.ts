@@ -4,19 +4,30 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { getCurrentUser } from './auth';
 
+function formatDate(dateStr: string) {
+  if (!dateStr || !dateStr.includes('-')) return dateStr;
+  const [y, m, d] = dateStr.split('-');
+  return `${d}-${m}-${y}`;
+}
+
 export async function createMaterialAction(formData: FormData) {
   try {
     const actividad = formData.get('actividad') as string;
     const asignatura = formData.get('asignatura') as string;
-    const profesor = formData.get('profesor') as string;
     const objetivos = formData.get('objetivos') as string;
     const recomendaciones = formData.get('recomendaciones') as string;
     const fecha_inicio = formData.get('fecha_inicio') as string;
     const fecha_termino = formData.get('fecha_termino') as string;
     const studentParamId = formData.get('studentId') as string;
     const fecha_carga_raw = formData.get('fecha_carga') as string;
+    const link_drive = formData.get('link_drive') as string;
+
+    const user = await getCurrentUser();
+    if (!user) return { success: false, error: 'No autorizado' };
+
+    const studentIdInt = parseInt(studentParamId);
     const fecha_carga = formatDate(fecha_carga_raw) || new Date().toLocaleDateString('es-CL');
-...
+
     // Crear el registro de material
     const material = await prisma.material.create({
       data: {
@@ -101,7 +112,7 @@ export async function incrementMaterialTimeAction(materialId: number, seconds: n
         tiempo_total_segundos: {
           increment: seconds
         }
-      }
+      } as any
     });
     return { success: true };
   } catch (error) {
