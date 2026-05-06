@@ -74,27 +74,43 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
         {/* Material Pendiente Detallado */}
         <section>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#facc15', display: 'inline-block', boxShadow: '0 0 10px rgba(250, 204, 21, 0.5)' }}></span>
-            Material Pendiente de Trabajo
+            <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#4ade80', display: 'inline-block', boxShadow: '0 0 10px rgba(74, 222, 128, 0.5)' }}></span>
+            Material de Trabajo (Actividades)
           </h2>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {filteredPendiente.map(item => {
-              // Calcular días restantes
+              // Calcular días restantes para el semáforo
               const [d, m, y] = item.termino.split('-').map(Number);
               const deadlineDate = new Date(y, m - 1, d);
               const today = new Date();
               today.setHours(0,0,0,0);
               const diffTime = deadlineDate.getTime() - today.getTime();
               const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-              const isOverdue = diffDays < 0;
+              
+              let statusColor = '#4ade80'; // Verde (A tiempo o completado)
+              let statusLabel = 'En Tiempo / Al Día';
+              let isAtrasado = false;
+
+              if (item.estado !== 'Completado') {
+                if (diffDays < 0) {
+                  statusColor = '#f87171'; // Rojo
+                  statusLabel = '¡ACTIVIDAD ATRASADA!';
+                  isAtrasado = true;
+                } else if (diffDays <= 3) {
+                  statusColor = '#facc15'; // Amarillo
+                  statusLabel = '¡PRÓXIMO A VENCER!';
+                }
+              } else {
+                statusLabel = 'ACTIVIDAD REALIZADA';
+              }
 
               return (
                 <article key={item.id} className="glass-panel" style={{ 
                   padding: '2rem', 
-                  borderLeft: isOverdue ? '4px solid #f87171' : '4px solid #facc15', 
+                  borderLeft: `4px solid ${statusColor}`, 
                   position: 'relative',
-                  backgroundColor: isOverdue ? 'rgba(248, 113, 113, 0.05)' : 'rgba(255,255,255,0.02)'
+                  backgroundColor: isAtrasado ? 'rgba(248, 113, 113, 0.05)' : 'rgba(255,255,255,0.02)'
                 }}>
                   <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'var(--glass-bg-subtle)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--foreground-muted)' }}>
                      Subido: {item.carga}
@@ -112,19 +128,20 @@ export default function PortalClient({ alumno, materiales }: PortalClientProps) 
                     </div>
                     <div style={{ 
                       textAlign: 'right', 
-                      background: isOverdue ? 'rgba(248, 113, 113, 0.1)' : 'rgba(250, 204, 21, 0.1)', 
+                      background: `${statusColor}11`, 
                       padding: '8px 12px', 
                       borderRadius: '8px', 
-                      border: isOverdue ? '1px solid rgba(248, 113, 113, 0.3)' : '1px solid rgba(250, 204, 21, 0.3)' 
+                      border: `1px solid ${statusColor}44` 
                     }}>
-                      <span style={{ display: 'block', fontSize: '0.75rem', color: isOverdue ? '#f87171' : '#facc15', textTransform: 'uppercase', fontWeight: 'bold' }}>
-                        {isOverdue ? '¡ACTIVIDAD ATRASADA!' : 'Plazo de ejecución'}
+                      <span style={{ display: 'block', fontSize: '0.75rem', color: statusColor, textTransform: 'uppercase', fontWeight: 'bold' }}>
+                        {statusLabel}
                       </span>
                       <span style={{ display: 'block', fontSize: '1rem', fontWeight: 'bold', color: 'var(--foreground)' }}>
                         {item.inicio} al {item.termino}
                       </span>
-                      <span style={{ display: 'block', fontSize: '0.75rem', color: isOverdue ? '#fca5a5' : 'var(--foreground-muted)', marginTop: '4px' }}>
-                        {isOverdue 
+                      <span style={{ display: 'block', fontSize: '0.75rem', color: isAtrasado ? '#fca5a5' : 'var(--foreground-muted)', marginTop: '4px' }}>
+                        {item.estado === 'Completado' ? 'Completado con éxito' : 
+                          isAtrasado 
                           ? `Han pasado ${Math.abs(diffDays)} días del límite` 
                           : diffDays === 0 ? '¡Vence hoy!' : `Faltan ${diffDays} días para el cierre`
                         }

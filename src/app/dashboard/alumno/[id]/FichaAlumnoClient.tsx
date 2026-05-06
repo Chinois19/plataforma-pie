@@ -32,6 +32,11 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
     return `Hace ${diffDays} días`;
   };
 
+  const todayStr = new Date().toISOString().split('T')[0];
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
   const handleDarDeAlta = () => {
     if (confirm('¿Estás seguro de dar de alta a este alumno de la modalidad a distancia? Ya no aparecerá en tu lista.')) {
       const dadosDeAlta = JSON.parse(localStorage.getItem('alumnosDadosDeAlta') || '[]');
@@ -219,18 +224,20 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
               <textarea name="recomendaciones" className="glass-input" placeholder="Ej. Acompañar al niño en un lugar sin ruido..." rows={2}></textarea>
             </div>
             <div>
+              <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Fecha de Carga (Hoy/Ayer)</label>
+              <input type="date" name="fecha_carga" className="glass-input" defaultValue={todayStr} min={yesterdayStr} required />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Enlace de Material Externo</label>
+              <input type="url" name="link_drive" className="glass-input" placeholder="https://docs.google.com/..." required />
+            </div>
+            <div>
               <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Fecha de Inicio</label>
               <input type="date" name="fecha_inicio" className="glass-input" required />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Fecha de Término</label>
               <input type="date" name="fecha_termino" className="glass-input" required />
-            </div>
-            <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <div style={{ flex: 1, minWidth: '300px' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: '#cbd5e1' }}>Enlace de Material Externo (Drive, Docs, YouTube)</label>
-                <input type="url" name="link_drive" className="glass-input" placeholder="https://docs.google.com/..." required />
-              </div>
             </div>
             <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
               <button type="submit" disabled={isUploading} className="glass-button primary" style={{ padding: '10px 24px', opacity: isUploading ? 0.7 : 1 }}>
@@ -306,15 +313,42 @@ export default function FichaAlumnoClient({ alumno, initialHistorial, createMate
                       )}
                     </td>
                     <td style={{ padding: '1rem' }}>
-                      <span style={{ 
-                        padding: '4px 8px', 
-                        borderRadius: '12px', 
-                        fontSize: '0.75rem',
-                        background: row.estado === 'Completado' ? 'rgba(74, 222, 128, 0.2)' : row.estado === 'En Curso' ? 'rgba(96, 165, 250, 0.2)' : 'rgba(248, 113, 113, 0.2)',
-                        color: row.estado === 'Completado' ? '#4ade80' : row.estado === 'En Curso' ? '#60a5fa' : '#f87171'
-                      }}>
-                        {row.estado}
-                      </span>
+                      {(() => {
+                        const [d, m, y] = row.termino.split('-').map(Number);
+                        const deadlineDate = new Date(y, m - 1, d);
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+                        const diffDays = Math.ceil((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                        
+                        let bgColor = 'rgba(74, 222, 128, 0.2)';
+                        let textColor = '#4ade80';
+                        let label = row.estado;
+
+                        if (row.estado !== 'Completado') {
+                          if (diffDays < 0) {
+                            bgColor = 'rgba(248, 113, 113, 0.2)';
+                            textColor = '#f87171';
+                            label = 'Atrasado';
+                          } else if (diffDays <= 3) {
+                            bgColor = 'rgba(250, 204, 21, 0.2)';
+                            textColor = '#facc15';
+                            label = 'Próximo';
+                          }
+                        }
+
+                        return (
+                          <span style={{ 
+                            padding: '4px 8px', 
+                            borderRadius: '12px', 
+                            fontSize: '0.75rem',
+                            background: bgColor,
+                            color: textColor,
+                            fontWeight: 'bold'
+                          }}>
+                            {label}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                       {row.link !== '#' ? (
